@@ -1,0 +1,33 @@
+# ----------------  数据  ----------------
+data:
+  target_size: [224, 224]
+  root_dir: "C:/共聚焦内窥镜图像质量筛选项目"          # 数据根目录（含 dataset/）
+  csv_file: "C:/共聚焦内窥镜图像质量筛选项目/dataset_labels.csv"
+  frames_per_clip: 8            # T
+  noise_rate: 0.1               # 训练集对称随机噪声 10 %
+
+# ----------------  模型  ----------------
+model:
+  backbone: "resnet18"
+  num_classes: 2                # 你的 CSV 只有 0 / 1 → 二分类
+
+# ----------------  训练  ----------------
+training:
+  batch_size: 16                # 显存不足就调小
+  epochs: 10
+  learning_rate: 0.001
+  weight_decay: 1e-4            # 确保写成数值，不加引号
+  mix_ratio: 0.5                # 损失 : VoG 排名权重
+  drop_fraction: 0.1            # 每 batch 丢弃噪声样本占比
+
+# ----------------  主动学习 --------------
+active:
+  method: "entropy"             # 或 "core-set"
+  rounds: 3                     # 清洗轮数
+  query_ratio: 0.05             # 每轮挑 5 % clip 复标签
+
+# ----------------  输出  ----------------
+output:
+  save_dir: "output/"                       # 日志 / splits.json
+  model_path: "output/model_final.pt"
+  confusion_matrix_png: "output/conf_mat.png"
